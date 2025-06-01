@@ -1,0 +1,340 @@
+.opportunities-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 2rem 4rem;
+}
+
+.opportunities-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+    
+    .highlight {
+      color: #E50712;
+    }
+  }
+  
+  .opportunities-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .api-info {
+    font-size: 0.8rem;
+    color: #999;
+    margin-top: 0.5rem;
+  }
+}
+
+.opportunities-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 25px;
+    
+    &:hover {
+      color: #E50712;
+    }
+    
+    &.active {
+      background-color: #E50712;
+      color: white;
+    }
+  }
+}
+
+.opportunities-actions {
+  margin-top: 1.5rem;
+  
+  .create-opportunity-btn {
+    display: inline-block;
+    background-color: #E50712;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    i {
+      margin-right: 0.5rem;
+    }
+    
+    &:hover {
+      background-color: darken(#E50712, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(229, 7, 18, 0.3);
+    }
+  }
+}
+
+.opportunities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.opportunity-card {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.opportunity-image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.opportunity-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  
+  .opportunity-card:hover & {
+    transform: scale(1.05);
+  }
+}
+
+.opportunity-category {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #E50712;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.example-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #FBBC05;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.opportunity-content {
+  padding: 1.5rem;
+}
+
+.opportunity-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  color: #1a1a1a;
+}
+
+.opportunity-organization {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #666;
+  
+  i {
+    color: #E50712;
+    margin-right: 0.5rem;
+  }
+}
+
+.opportunity-details {
+  display: flex;
+  margin-bottom: 1rem;
+  
+  .opportunity-location,
+  .opportunity-commitment {
+    display: flex;
+    align-items: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-right: 1.5rem;
+    
+    i {
+      color: #E50712;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.opportunity-description {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.opportunity-link {
+  display: inline-flex;
+  align-items: center;
+  color: #E50712;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  i {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover {
+    color: darken(#E50712, 10%);
+    
+    i {
+      transform: translateX(3px);
+    }
+  }
+}
+
+.load-more-container {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.load-more-button {
+  background-color: transparent;
+  color: #E50712;
+  border: 2px solid #E50712;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #E50712;
+    color: white;
+  }
+  
+  &:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #E50712;
+}
+
+.no-opportunities {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .create-opportunity-btn {
+    display: inline-block;
+    background-color: #E50712;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: darken(#E50712, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(229, 7, 18, 0.3);
+    }
+  }
+}
+
+.create-your-own {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin: 3rem 0;
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+  }
+  
+  p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .create-opportunity-btn {
+    display: inline-block;
+    background-color: #E50712;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: darken(#E50712, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(229, 7, 18, 0.3);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .opportunities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .opportunities-header h1 {
+    font-size: 2rem;
+  }
+}
