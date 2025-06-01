@@ -59,7 +59,7 @@ const Navbar = () => {
         {/* Logo */}
         <div className="logo">
           <Link to="/" className="logo-link">
-            <img src="/assets/Croissant_rouge" alt="Croissant Rouge Logo" className="logo-image" />
+            <img src="https://arab.org/wp-content/uploads/2019/01/croissant-rouge-maroc.jpg" alt="Croissant Rouge Logo" className="logo-image" />
           </Link>
         </div>
 
