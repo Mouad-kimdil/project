@@ -21,9 +21,8 @@ const Signup = () => {
   };
 
   const validatePassword = (password) => {
-    // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
-    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    return re.test(password);
+    // Au moins 6 caractères
+    return password.length >= 6;
   };
 
   const handleChange = (e) => {
@@ -32,12 +31,12 @@ const Signup = () => {
       [e.target.name]: e.target.value
     });
     
-    // Clear error when field is edited
+    // Effacer l'erreur lorsque le champ est modifié
     if (errors[e.target.name]) {
       setErrors({
         ...errors,
         [e.target.name]: null,
-        general: null // Clear general errors too
+        general: null // Effacer également les erreurs générales
       });
     }
   };
@@ -46,27 +45,27 @@ const Signup = () => {
     const newErrors = {};
     
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
+      newErrors.firstName = 'Le prénom est requis';
     }
     
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+      newErrors.lastName = 'Le nom est requis';
     }
     
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'L\'email est requis';
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Veuillez entrer une adresse email valide';
     }
     
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Le mot de passe est requis';
     } else if (!validatePassword(formData.password)) {
-      newErrors.password = 'Password must be at least 8 characters with 1 uppercase letter, 1 lowercase letter, and 1 number';
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
     }
     
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
     }
     
     setErrors(newErrors);
@@ -83,23 +82,33 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      console.log('Attempting registration with:', formData.email);
+      console.log('Tentative d\'inscription avec:', formData.email);
       
-      await authApi.register({
+      const response = await authApi.register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password
       });
       
-      console.log('Registration successful');
+      console.log('Inscription réussie');
       navigate('/profile');
     } catch (err) {
-      console.error('Registration error:', err);
-      setErrors({
-        ...errors,
-        general: err.response?.data?.message || 'Registration failed. Please try again.'
-      });
+      console.error('Erreur d\'inscription:', err);
+      
+      // Gérer les erreurs spécifiques aux champs
+      if (err.response?.data?.field) {
+        setErrors({
+          ...errors,
+          [err.response.data.field]: err.response.data.message || 'Erreur de validation',
+          general: null
+        });
+      } else {
+        setErrors({
+          ...errors,
+          general: err.response?.data?.message || 'L\'inscription a échoué. Veuillez réessayer.'
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -109,8 +118,8 @@ const Signup = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2>Create Account</h2>
-          <p>Join our community of volunteers making a difference</p>
+          <h2>Créer un compte</h2>
+          <p>Rejoignez notre communauté de bénévoles qui font la différence</p>
         </div>
 
         {errors.general && <div className="auth-error">{errors.general}</div>}
@@ -118,7 +127,7 @@ const Signup = () => {
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="firstName">First Name</label>
+              <label htmlFor="firstName">Prénom</label>
               <input
                 type="text"
                 id="firstName"
@@ -126,13 +135,13 @@ const Signup = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 className={errors.firstName ? 'error' : ''}
-                placeholder="Enter your first name"
+                placeholder="Entrez votre prénom"
               />
               {errors.firstName && <div className="error-message">{errors.firstName}</div>}
             </div>
 
             <div className="form-group">
-              <label htmlFor="lastName">Last Name</label>
+              <label htmlFor="lastName">Nom</label>
               <input
                 type="text"
                 id="lastName"
@@ -140,7 +149,7 @@ const Signup = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 className={errors.lastName ? 'error' : ''}
-                placeholder="Enter your last name"
+                placeholder="Entrez votre nom"
               />
               {errors.lastName && <div className="error-message">{errors.lastName}</div>}
             </div>
@@ -155,13 +164,13 @@ const Signup = () => {
               value={formData.email}
               onChange={handleChange}
               className={errors.email ? 'error' : ''}
-              placeholder="Enter your email"
+              placeholder="Entrez votre email"
             />
             {errors.email && <div className="error-message">{errors.email}</div>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Mot de passe</label>
             <input
               type="password"
               id="password"
@@ -169,13 +178,13 @@ const Signup = () => {
               value={formData.password}
               onChange={handleChange}
               className={errors.password ? 'error' : ''}
-              placeholder="Create a password"
+              placeholder="Créez un mot de passe (min. 6 caractères)"
             />
             {errors.password && <div className="error-message">{errors.password}</div>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
             <input
               type="password"
               id="confirmPassword"
@@ -183,7 +192,7 @@ const Signup = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               className={errors.confirmPassword ? 'error' : ''}
-              placeholder="Confirm your password"
+              placeholder="Confirmez votre mot de passe"
             />
             {errors.confirmPassword && <div className="error-message">{errors.confirmPassword}</div>}
           </div>
@@ -191,7 +200,7 @@ const Signup = () => {
           <div className="form-group terms">
             <input type="checkbox" id="terms" required />
             <label htmlFor="terms">
-              I agree to the <Link to="/terms">Terms of Service</Link> and <Link to="/privacy">Privacy Policy</Link>
+              J'accepte les <Link to="/terms">Conditions d'utilisation</Link> et la <Link to="/privacy">Politique de confidentialité</Link>
             </label>
           </div>
 
@@ -200,12 +209,12 @@ const Signup = () => {
             className="auth-button"
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? 'Création du compte...' : 'S\'inscrire'}
           </button>
         </form>
 
         <div className="auth-footer">
-          <p>Already have an account? <Link to="/login">Sign In</Link></p>
+          <p>Vous avez déjà un compte? <Link to="/login">Se connecter</Link></p>
         </div>
       </div>
     </div>

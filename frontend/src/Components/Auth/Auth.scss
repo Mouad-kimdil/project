@@ -59,70 +59,74 @@
   
   .form-group {
     margin-bottom: 1.5rem;
+    position: relative;
+  }
+  
+  .error-message {
+    color: #E50712;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    height: 48px; /* Fixed height for all inputs */
+    
+    &:focus {
+      outline: none;
+      border-color: #E50712;
+      box-shadow: 0 0 0 3px rgba(229, 7, 18, 0.1);
+    }
+    
+    &::placeholder {
+      color: #A6A6A6;
+    }
+    
+    &.error {
+      border-color: #E50712;
+      background-color: rgba(229, 7, 18, 0.05);
+    }
+  }
+  
+  .form-group.terms {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #E50712;
+    }
     
     label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #1a1a1a;
-      font-weight: 500;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
+      margin-bottom: 0;
+      font-size: 0.9rem;
       
-      &:focus {
-        outline: none;
-        border-color: #E50712;
-        box-shadow: 0 0 0 3px rgba(229, 7, 18, 0.1);
-      }
-      
-      &::placeholder {
-        color: #A6A6A6;
-      }
-      
-      &.error {
-        border-color: #E50712;
-        background-color: rgba(229, 7, 18, 0.05);
-      }
-    }
-    
-    .error-message {
-      color: #E50712;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-    }
-    
-    &.terms {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      
-      input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: #E50712;
-      }
-      
-      label {
-        margin-bottom: 0;
-        font-size: 0.9rem;
+      a {
+        color: #E50712;
+        text-decoration: none;
         
-        a {
-          color: #E50712;
-          text-decoration: none;
-          
-          &:hover {
-            text-decoration: underline;
-          }
+        &:hover {
+          text-decoration: underline;
         }
       }
     }

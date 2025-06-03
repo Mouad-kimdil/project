@@ -1,339 +1,272 @@
-import axios from 'axios';
+// API pour l'authentification et la gestion des utilisateurs
 
-const API_BASE_URL = 'http://localhost:5001/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Dispatch auth change event
-const dispatchAuthChangeEvent = () => {
-  window.dispatchEvent(new Event('auth-change'));
-};
-
-// Store registered users in localStorage for development
-const getRegisteredUsers = () => {
-  const users = localStorage.getItem('registeredUsers');
-  return users ? JSON.parse(users) : [];
-};
-
-const saveRegisteredUser = (user) => {
-  const users = getRegisteredUsers();
-  users.push(user);
-  localStorage.setItem('registeredUsers', JSON.stringify(users));
-};
-
-// Update a user in the registered users list
-const updateRegisteredUser = (updatedUser) => {
-  const users = getRegisteredUsers();
-  const updatedUsers = users.map(user => 
-    user.id === updatedUser.id ? { ...user, ...updatedUser } : user
-  );
-  localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
-};
-
-// Get user events and activities
-const getUserEvents = (userId) => {
-  const eventsStr = localStorage.getItem('userEvents');
-  const events = eventsStr ? JSON.parse(eventsStr) : {};
-  return events[userId] || [];
-};
-
-const getUserOpportunities = (userId) => {
-  const opportunitiesStr = localStorage.getItem('userOpportunities');
-  const opportunities = opportunitiesStr ? JSON.parse(opportunitiesStr) : {};
-  return opportunities[userId] || [];
-};
-
-export const authApi = {
+/**
+ * API pour l'authentification et la gestion des utilisateurs
+ */
+const authApi = {
+  /**
+   * Connecte un utilisateur avec email et mot de passe
+   * @param {string} email - Email de l'utilisateur
+   * @param {string} password - Mot de passe de l'utilisateur
+   * @returns {Promise<Object>} Informations de l'utilisateur connecté
+   */
   login: async (email, password) => {
     try {
-      console.log('Checking login credentials');
+      const response = await fetch('http://localhost:5001/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password }),
+        // Augmenter le timeout pour éviter les erreurs ECONNRESET
+        signal: AbortSignal.timeout(10000) // 10 secondes
+      });
       
-      // For development - check against localStorage registered users
-      const users = getRegisteredUsers();
-      const user = users.find(u => u.email === email);
+      const data = await response.json();
       
-      if (!user || user.password !== password) {
-        throw new Error('Invalid credentials');
+      if (!response.ok) {
+        throw { response: { data } };
       }
       
-      // Create a user object without the password
-      const authenticatedUser = {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        profileImage: user.profileImage, // Include profile image
-        role: user.role || 'user'
-      };
+      // Stocker le token dans le localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
       
-      const token = 'dev-token-' + Date.now();
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(authenticatedUser));
+      // Déclencher un événement personnalisé
+      window.dispatchEvent(new Event('auth-change'));
       
-      // Dispatch auth change event
-      dispatchAuthChangeEvent();
-      
-      return { token, user: authenticatedUser };
+      return data.user;
     } catch (error) {
-      console.error('Login failed:', error.message);
-      throw {
-        response: {
-          data: {
-            message: 'Invalid email or password'
-          }
-        }
-      };
+      console.error('Erreur de connexion:', error);
+      
+      // Gérer spécifiquement les erreurs de type ECONNRESET
+      if (error.name === 'AbortError' || 
+          (error.message && error.message.includes('network')) ||
+          (error.message && error.message.includes('ECONNRESET'))) {
+        throw { 
+          response: { 
+            data: { 
+              success: false, 
+              message: 'Erreur de connexion au serveur. Veuillez vérifier votre connexion réseau et réessayer.' 
+            } 
+          } 
+        };
+      }
+      
+      throw error;
     }
   },
 
+  /**
+   * Inscrit un nouvel utilisateur
+   * @param {Object} userData - Données de l'utilisateur
+   * @returns {Promise<Object>} Informations de l'utilisateur inscrit
+   */
   register: async (userData) => {
     try {
-      console.log('Registering new user');
+      const response = await fetch('http://localhost:5001/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData),
+        // Augmenter le timeout pour éviter les erreurs ECONNRESET
+        signal: AbortSignal.timeout(10000) // 10 secondes
+      });
       
-      // For development - store in localStorage
-      const users = getRegisteredUsers();
+      const data = await response.json();
       
-      // Check if email already exists
-      if (users.some(user => user.email === userData.email)) {
-        throw new Error('Email already registered');
+      if (!response.ok) {
+        throw { response: { data } };
       }
       
-      // Create new user with ID
-      const newUser = {
-        id: `user_${Date.now()}`,
-        ...userData,
-        role: 'user'
-      };
+      // Stocker le token dans le localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
       
-      // Save to localStorage
-      saveRegisteredUser(newUser);
+      // Déclencher un événement personnalisé
+      window.dispatchEvent(new Event('auth-change'));
       
-      // Create a user object without the password
-      const registeredUser = {
-        id: newUser.id,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        email: newUser.email,
-        role: newUser.role
-      };
-      
-      const token = 'dev-token-' + Date.now();
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(registeredUser));
-      
-      // Initialize empty events and opportunities for the user
-      const userEvents = JSON.parse(localStorage.getItem('userEvents') || '{}');
-      userEvents[newUser.id] = [];
-      localStorage.setItem('userEvents', JSON.stringify(userEvents));
-      
-      const userOpportunities = JSON.parse(localStorage.getItem('userOpportunities') || '{}');
-      userOpportunities[newUser.id] = [];
-      localStorage.setItem('userOpportunities', JSON.stringify(userOpportunities));
-      
-      // Dispatch auth change event
-      dispatchAuthChangeEvent();
-      
-      return { token, user: registeredUser };
+      return data.user;
     } catch (error) {
-      console.error('Registration failed:', error.message);
-      throw {
-        response: {
-          data: {
-            message: error.message || 'Registration failed'
-          }
-        }
+      console.error('Erreur d\'inscription:', error);
+      
+      // Gérer spécifiquement les erreurs de type ECONNRESET
+      if (error.name === 'AbortError' || 
+          (error.message && error.message.includes('network')) ||
+          (error.message && error.message.includes('ECONNRESET'))) {
+        throw { 
+          response: { 
+            data: { 
+              success: false, 
+              message: 'Erreur de connexion au serveur. Veuillez vérifier votre connexion réseau et réessayer.' 
+            } 
+          } 
+        };
+      }
+      
+      throw error;
+    }
+  },
+
+  /**
+   * Déconnecte l'utilisateur actuel
+   */
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    // Déclencher un événement personnalisé
+    window.dispatchEvent(new Event('auth-change'));
+  },
+
+  /**
+   * Vérifie si un utilisateur est connecté
+   * @returns {boolean} Vrai si un utilisateur est connecté
+   */
+  isAuthenticated: () => {
+    return localStorage.getItem('token') !== null;
+  },
+
+  /**
+   * Récupère les informations de l'utilisateur connecté
+   * @returns {Object|null} Informations de l'utilisateur ou null
+   */
+  getCurrentUser: () => {
+    const userJson = localStorage.getItem('currentUser');
+    return userJson ? JSON.parse(userJson) : null;
+  },
+
+  /**
+   * Met à jour le profil de l'utilisateur
+   * @param {Object} updates - Modifications à apporter au profil
+   * @returns {Promise<Object>} Profil mis à jour
+   */
+  updateProfile: async (updates) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5001/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates),
+        // Augmenter le timeout pour éviter les erreurs ECONNRESET
+        signal: AbortSignal.timeout(10000) // 10 secondes
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw { response: { data } };
+      }
+      
+      // Mettre à jour l'utilisateur dans le localStorage
+      localStorage.setItem('currentUser', JSON.stringify(data.data));
+      
+      // Déclencher un événement personnalisé
+      window.dispatchEvent(new Event('auth-change'));
+      
+      return data.data;
+    } catch (error) {
+      console.error('Erreur de mise à jour du profil:', error);
+      
+      // Gérer spécifiquement les erreurs de type ECONNRESET
+      if (error.name === 'AbortError' || 
+          (error.message && error.message.includes('network')) ||
+          (error.message && error.message.includes('ECONNRESET'))) {
+        throw { 
+          response: { 
+            data: { 
+              success: false, 
+              message: 'Erreur de connexion au serveur. Veuillez vérifier votre connexion réseau et réessayer.' 
+            } 
+          } 
+        };
+      }
+      
+      throw error;
+    }
+  },
+
+  /**
+   * Récupère les statistiques de l'utilisateur
+   * @returns {Promise<Object>} Statistiques de l'utilisateur
+   */
+  getUserStats: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5001/api/users/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        // Augmenter le timeout pour éviter les erreurs ECONNRESET
+        signal: AbortSignal.timeout(10000) // 10 secondes
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw { response: { data } };
+      }
+      
+      return data.data;
+    } catch (error) {
+      console.error('Erreur de récupération des statistiques:', error);
+      
+      // En cas d'erreur réseau, retourner des valeurs par défaut
+      if (error.name === 'AbortError' || 
+          (error.message && error.message.includes('network')) ||
+          (error.message && error.message.includes('ECONNRESET'))) {
+        console.warn('Erreur réseau lors de la récupération des statistiques, utilisation des valeurs par défaut');
+      }
+      
+      return {
+        hoursVolunteered: 0,
+        eventsAttended: 0,
+        peopleImpacted: 0
       };
     }
   },
 
-  logout: async () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    
-    // Dispatch auth change event
-    dispatchAuthChangeEvent();
-  },
-
-  getMe: async () => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) {
-      throw new Error('User not found');
+  /**
+   * Récupère les activités de l'utilisateur
+   * @returns {Promise<Array>} Liste des activités
+   */
+  getUserActivities: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5001/api/users/activities', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        // Augmenter le timeout pour éviter les erreurs ECONNRESET
+        signal: AbortSignal.timeout(10000) // 10 secondes
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw { response: { data } };
+      }
+      
+      return data.data;
+    } catch (error) {
+      console.error('Erreur de récupération des activités:', error);
+      
+      // En cas d'erreur réseau, retourner un tableau vide
+      if (error.name === 'AbortError' || 
+          (error.message && error.message.includes('network')) ||
+          (error.message && error.message.includes('ECONNRESET'))) {
+        console.warn('Erreur réseau lors de la récupération des activités, utilisation d\'un tableau vide');
+      }
+      
+      return [];
     }
-    return JSON.parse(userStr);
-  },
-
-  getCurrentUser: () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  },
-
-  updateProfile: (userData) => {
-    // Get current user
-    const currentUser = authApi.getCurrentUser();
-    if (!currentUser) return false;
-    
-    // Update user data
-    const updatedUser = { ...currentUser, ...userData };
-    
-    // Save to localStorage
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    
-    // Update in registered users
-    updateRegisteredUser(updatedUser);
-    
-    // Dispatch auth change event
-    dispatchAuthChangeEvent();
-    
-    return true;
-  },
-
-  getUserStats: () => {
-    const currentUser = authApi.getCurrentUser();
-    if (!currentUser) return null;
-    
-    const events = getUserEvents(currentUser.id);
-    const opportunities = getUserOpportunities(currentUser.id);
-    
-    // Calculate hours based on events and opportunities
-    const hoursVolunteered = events.reduce((total, event) => total + (event.hours || 2), 0) + 
-                            opportunities.reduce((total, opp) => total + (opp.hours || 3), 0);
-    
-    return {
-      hoursVolunteered,
-      eventsAttended: events.length,
-      peopleImpacted: events.length * 10 + opportunities.length * 5 // Simple calculation for demo
-    };
-  },
-
-  getUserActivities: () => {
-    const currentUser = authApi.getCurrentUser();
-    if (!currentUser) return [];
-    
-    const events = getUserEvents(currentUser.id).map(event => ({
-      ...event,
-      type: 'event'
-    }));
-    
-    const opportunities = getUserOpportunities(currentUser.id).map(opp => ({
-      ...opp,
-      type: 'opportunity'
-    }));
-    
-    return [...events, ...opportunities].sort((a, b) => new Date(b.date) - new Date(a.date));
-  },
-
-  addEvent: (eventData) => {
-    const currentUser = authApi.getCurrentUser();
-    if (!currentUser) return false;
-    
-    const event = {
-      id: `event_${Date.now()}`,
-      ...eventData,
-      date: eventData.date || new Date().toISOString().split('T')[0],
-      status: 'Upcoming',
-      userId: currentUser.id
-    };
-    
-    const userEvents = JSON.parse(localStorage.getItem('userEvents') || '{}');
-    userEvents[currentUser.id] = userEvents[currentUser.id] || [];
-    userEvents[currentUser.id].push(event);
-    localStorage.setItem('userEvents', JSON.stringify(userEvents));
-    
-    return event;
-  },
-
-  addOpportunity: (opportunityData) => {
-    const currentUser = authApi.getCurrentUser();
-    if (!currentUser) return false;
-    
-    const opportunity = {
-      id: `opportunity_${Date.now()}`,
-      ...opportunityData,
-      date: opportunityData.date || new Date().toISOString().split('T')[0],
-      status: 'Active',
-      userId: currentUser.id
-    };
-    
-    const userOpportunities = JSON.parse(localStorage.getItem('userOpportunities') || '{}');
-    userOpportunities[currentUser.id] = userOpportunities[currentUser.id] || [];
-    userOpportunities[currentUser.id].push(opportunity);
-    localStorage.setItem('userOpportunities', JSON.stringify(userOpportunities));
-    
-    return opportunity;
-  },
-
-  isAuthenticated: () => localStorage.getItem('token') !== null,
-  
-  // Demo login function
-  demoLogin: async () => {
-    return authApi.login('demo@example.com', 'Demo123');
   }
 };
 
-// Initialize with a demo user if no users exist
-if (getRegisteredUsers().length === 0) {
-  saveRegisteredUser({
-    id: 'demo-user-id',
-    firstName: 'Demo',
-    lastName: 'User',
-    email: 'demo@example.com',
-    password: 'Demo123',
-    role: 'user'
-  });
-  
-  // Add some demo events and opportunities for the demo user
-  const demoEvents = [
-    {
-      id: 'event_1',
-      title: 'Community Cleanup Day',
-      date: '2023-08-15',
-      status: 'Completed',
-      hours: 4,
-      userId: 'demo-user-id'
-    }
-  ];
-  
-  const demoOpportunities = [
-    {
-      id: 'opportunity_1',
-      title: 'Reading Buddy',
-      date: '2023-09-05',
-      status: 'Active',
-      hours: 2,
-      userId: 'demo-user-id'
-    }
-  ];
-  
-  localStorage.setItem('userEvents', JSON.stringify({ 'demo-user-id': demoEvents }));
-  localStorage.setItem('userOpportunities', JSON.stringify({ 'demo-user-id': demoOpportunities }));
-}
-
-export default api;
+export { authApi };

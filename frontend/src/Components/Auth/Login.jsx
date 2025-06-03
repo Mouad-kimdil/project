@@ -24,12 +24,12 @@ const Login = () => {
       [e.target.name]: e.target.value
     });
     
-    // Clear error when field is edited
+    // Effacer l'erreur lorsque le champ est modifié
     if (errors[e.target.name]) {
       setErrors({
         ...errors,
         [e.target.name]: null,
-        general: null // Clear general errors too
+        general: null // Effacer également les erreurs générales
       });
     }
   };
@@ -38,13 +38,13 @@ const Login = () => {
     const newErrors = {};
     
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'L\'email est requis';
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'Veuillez entrer une adresse email valide';
     }
     
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Le mot de passe est requis';
     }
     
     setErrors(newErrors);
@@ -61,18 +61,28 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log('Attempting login with:', formData.email);
+      console.log('Tentative de connexion avec:', formData.email);
       
       await authApi.login(formData.email, formData.password);
       
-      console.log('Login successful');
+      console.log('Connexion réussie');
       navigate('/profile');
     } catch (err) {
-      console.error('Login error:', err);
-      setErrors({
-        ...errors,
-        general: err.response?.data?.message || 'Invalid email or password. Please try again.'
-      });
+      console.error('Erreur de connexion:', err);
+      
+      // Gérer les erreurs spécifiques aux champs
+      if (err.response?.data?.field) {
+        setErrors({
+          ...errors,
+          [err.response.data.field]: err.response.data.message || 'Erreur de validation',
+          general: null
+        });
+      } else {
+        setErrors({
+          ...errors,
+          general: err.response?.data?.message || 'Email ou mot de passe invalide. Veuillez réessayer.'
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -82,29 +92,30 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2>Welcome Back</h2>
-          <p>Sign in to continue your volunteering journey</p>
+          <h2>Bienvenue</h2>
+          <p>Connectez-vous pour continuer votre parcours de bénévolat</p>
         </div>
 
         {errors.general && <div className="auth-error">{errors.general}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
+            {errors.email && <div className="error-message">{errors.email}</div>}
             <label htmlFor="email">Email</label>
             <input
-              type="email"
+              type="text"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               className={errors.email ? 'error' : ''}
-              placeholder="Enter your email"
+              placeholder="Entrez votre email"
             />
-            {errors.email && <div className="error-message">{errors.email}</div>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            {errors.password && <div className="error-message">{errors.password}</div>}
+            <label htmlFor="password">Mot de passe</label>
             <input
               type="password"
               id="password"
@@ -112,11 +123,10 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               className={errors.password ? 'error' : ''}
-              placeholder="Enter your password"
+              placeholder="Entrez votre mot de passe"
             />
-            {errors.password && <div className="error-message">{errors.password}</div>}
             <div className="forgot-password">
-              <Link to="/forgot-password">Forgot password?</Link>
+              <Link to="/forgot-password">Mot de passe oublié?</Link>
             </div>
           </div>
 
@@ -125,18 +135,18 @@ const Login = () => {
             className="auth-button"
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
         </form>
 
         <div className="auth-divider">
-          <span>OR</span>
+          <span>OU</span>
         </div>
 
         <DemoLogin />
 
         <div className="auth-footer">
-          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+          <p>Vous n'avez pas de compte? <Link to="/signup">S'inscrire</Link></p>
         </div>
       </div>
     </div>

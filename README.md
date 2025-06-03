@@ -1,104 +1,127 @@
-# Volunteer Hub
+# VolunteerHub - Plateforme de Bénévolat
 
-A platform for connecting volunteers with opportunities and events.
+## Privilèges des utilisateurs
 
-## Project Structure
+### Utilisateur normal (rôle 'user')
+- **Peut** :
+  - S'inscrire et se connecter
+  - Consulter son profil et modifier ses informations personnelles
+  - Consulter uniquement les événements et opportunités approuvés
+  - S'inscrire aux événements approuvés
+  - Laisser des témoignages
 
-```
-internship_PROJECT/
-├── frontend/                # React frontend
-│   ├── public/              # Static files
-│   └── src/
-│       ├── api/             # API services
-│       ├── assets/          # Images and other assets
-│       └── Components/      # React components
-│           ├── Auth/        # Authentication components
-│           ├── Events/      # Event components
-│           ├── Feedback/    # Feedback components
-│           ├── Forms/       # Form components
-│           ├── HomePage/    # Home page components
-│           ├── Navbar/      # Navigation components
-│           └── Opportunities/ # Opportunity components
-│
-└── backend/                 # Express backend
-    ├── public/              # Static files and uploads
-    └── src/
-        ├── config/          # Configuration files
-        ├── controllers/     # Route controllers
-        ├── middleware/      # Custom middleware
-        ├── models/          # Mongoose models
-        └── routes/          # API routes
-```
+- **Ne peut pas** :
+  - Créer des événements ou opportunités
+  - Approuver ou refuser des événements et opportunités
+  - Accéder aux fonctionnalités d'administration
+  - Voir les événements et opportunités en attente ou refusés
 
-## Getting Started
+### Administrateur (rôle 'admin')
+- **Peut** :
+  - Créer des événements et opportunités (automatiquement approuvés)
+  - Voir tous les événements et opportunités (y compris ceux en attente et refusés)
+  - Modifier et supprimer tous les événements et opportunités
+  - Gérer tous les utilisateurs
+  - Créer d'autres administrateurs
 
-### Prerequisites
+## Flux de travail des événements et opportunités
 
-- Node.js (v14+)
+1. **Création** :
+   - Seuls les administrateurs peuvent créer des événements et opportunités
+   - Les événements et opportunités créés par les administrateurs sont automatiquement approuvés
+
+2. **Visibilité** :
+   - Les utilisateurs normaux ne voient que les événements et opportunités approuvés
+   - Les administrateurs voient tous les événements et opportunités
+
+3. **Modification** :
+   - Seuls les administrateurs peuvent modifier ou supprimer des événements et opportunités
+
+## Installation et démarrage
+
+### Prérequis
+- Node.js
 - MongoDB
 
 ### Installation
+```bash
+# Installer les dépendances du backend
+cd backend
+npm install
 
-1. Clone the repository
-2. Install backend dependencies:
+# Installer les dépendances du frontend
+cd ../frontend
+npm install
+```
+
+### Configuration
+Créez un fichier `.env` dans le dossier `backend` avec les variables suivantes :
+```
+PORT=5001
+MONGODB_URI=mongodb://localhost:27017/volunteer-hub
+JWT_SECRET=votre_secret_jwt
+JWT_EXPIRE=30d
+NODE_ENV=development
+```
+
+### Démarrage
+```bash
+# Démarrer le backend
+cd backend
+npm run dev
+
+# Démarrer le frontend
+cd ../frontend
+npm run dev
+```
+
+### Scripts utiles
+```bash
+# Créer le premier administrateur
+cd backend
+npm run create-admin
+
+# Effacer tous les utilisateurs
+npm run clear-users
+
+# Réinitialiser toute la base de données
+npm run reset-db
+```
+
+## Dépannage
+
+### Erreur ECONNRESET
+Si vous rencontrez l'erreur `ECONNRESET`, essayez les solutions suivantes :
+
+1. **Vérifiez que MongoDB est en cours d'exécution**
+   ```bash
+   # Vérifier le statut de MongoDB
+   sudo systemctl status mongodb
+   # ou sur macOS
+   brew services list mongodb-community
    ```
-   cd backend
-   npm install
-   ```
-3. Install frontend dependencies:
-   ```
-   cd frontend
-   npm install
-   ```
 
-### Running the Application
-
-1. Start the backend server:
-   ```
-   cd backend
-   npm run dev
-   ```
-2. Start the frontend development server:
-   ```
-   cd frontend
-   npm start
+2. **Redémarrez MongoDB**
+   ```bash
+   # Sur Linux
+   sudo systemctl restart mongodb
+   # ou sur macOS
+   brew services restart mongodb-community
    ```
 
-## Features
+3. **Augmentez le délai d'attente des requêtes**
+   Dans `backend/config/db.js`, modifiez les options de connexion :
+   ```javascript
+   const options = {
+     useNewUrlParser: true,
+     useUnifiedTopology: true,
+     serverSelectionTimeoutMS: 10000, // Augmenter à 10 secondes
+     socketTimeoutMS: 45000 // Augmenter à 45 secondes
+   };
+   ```
 
-- User authentication (login/signup)
-- Browse volunteer opportunities
-- Browse volunteer events
-- Create new opportunities and events
-- View testimonials from volunteers
-- Responsive design for mobile and desktop
+4. **Vérifiez votre connexion réseau**
+   Les problèmes de réseau instable peuvent causer cette erreur.
 
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
-- `GET /api/auth/logout` - Logout user
-
-### Events
-- `GET /api/events` - Get all events
-- `GET /api/events/:id` - Get single event
-- `POST /api/events` - Create new event
-- `PUT /api/events/:id` - Update event
-- `DELETE /api/events/:id` - Delete event
-
-### Opportunities
-- `GET /api/opportunities` - Get all opportunities
-- `GET /api/opportunities/:id` - Get single opportunity
-- `POST /api/opportunities` - Create new opportunity
-- `PUT /api/opportunities/:id` - Update opportunity
-- `DELETE /api/opportunities/:id` - Delete opportunity
-
-### Testimonials
-- `GET /api/testimonials` - Get all testimonials
-- `GET /api/testimonials/random` - Get random testimonials
-- `GET /api/testimonials/:id` - Get single testimonial
-- `POST /api/testimonials` - Create new testimonial
-- `PUT /api/testimonials/:id` - Update testimonial
-- `DELETE /api/testimonials/:id` - Delete testimonial
+5. **Vérifiez les logs du serveur**
+   Examinez les logs du serveur backend pour identifier la source exacte de l'erreur.

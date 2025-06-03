@@ -1,0 +1,229 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "firstName": "Thomas",
+      "lastName": "Dubois",
+      "email": "thomas.dubois@example.com",
+      "password": "Password123",
+      "profileImage": "https://randomuser.me/api/portraits/men/22.jpg",
+      "role": "admin"
+    },
+    {
+      "id": "user-2",
+      "firstName": "Sophie",
+      "lastName": "Martin",
+      "email": "sophie.martin@example.com",
+      "password": "Password123",
+      "profileImage": "https://randomuser.me/api/portraits/women/45.jpg",
+      "role": "user"
+    },
+    {
+      "id": "user-3",
+      "firstName": "Jean",
+      "lastName": "Bernard",
+      "email": "jean.bernard@example.com",
+      "password": "Password123",
+      "profileImage": "https://randomuser.me/api/portraits/men/33.jpg",
+      "role": "user"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-1",
+      "title": "Assistant au refuge pour sans-abri",
+      "organization": "Refuge Municipal",
+      "location": "Centre-ville",
+      "category": "Services sociaux",
+      "commitment": "Hebdomadaire, 3-4 heures",
+      "description": "Aidez à préparer et servir des repas au refuge local pour sans-abri. Les tâches comprennent la préparation des aliments, le service des repas, le nettoyage et l'interaction avec les résidents du refuge. Aucune expérience nécessaire, mais vous devez avoir au moins 18 ans.",
+      "requirements": "Doit avoir 18+ ans, vérification des antécédents requise",
+      "skills": ["Préparation alimentaire", "Service client", "Empathie"],
+      "contactEmail": "volunteer@cityshelter.org",
+      "contactPhone": "(555) 123-4567",
+      "image": "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "hours": 3,
+      "createdBy": "user-1",
+      "createdAt": "2023-10-15T14:30:00Z"
+    },
+    {
+      "id": "opp-2",
+      "title": "Partenaire de lecture",
+      "organization": "Bibliothèque Publique",
+      "location": "Divers endroits",
+      "category": "Éducation",
+      "commitment": "Hebdomadaire, 2 heures",
+      "description": "Lisez avec des enfants pour améliorer leurs compétences en lecture. Les bénévoles seront jumelés avec des enfants âgés de 6 à 12 ans qui ont besoin d'aide supplémentaire en lecture. C'est une opportunité enrichissante d'avoir un impact direct sur l'éducation et l'avenir d'un enfant.",
+      "requirements": "Doit avoir 16+ ans, vérification des antécédents requise",
+      "skills": ["Patience", "Enseignement", "Communication"],
+      "contactEmail": "volunteer@publiclibrary.org",
+      "contactPhone": "(555) 987-6543",
+      "image": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "hours": 2,
+      "createdBy": "user-2",
+      "createdAt": "2023-11-05T09:15:00Z"
+    },
+    {
+      "id": "opp-3",
+      "title": "Bénévole en conservation de la faune",
+      "organization": "Conservatoire de la Nature",
+      "location": "Parc National",
+      "category": "Environnement",
+      "commitment": "Mensuel, Journée complète",
+      "description": "Aidez à la restauration des habitats et à la surveillance de la faune. Les activités comprennent la plantation d'espèces indigènes, l'élimination de plantes invasives et le suivi des populations d'animaux sauvages. Parfait pour les amoureux de la nature qui souhaitent contribuer à la conservation de l'environnement.",
+      "requirements": "Doit avoir 18+ ans, expérience en plein air préférée",
+      "skills": ["Endurance physique", "Connaissances environnementales", "Travail d'équipe"],
+      "contactEmail": "volunteer@natureconservancy.org",
+      "contactPhone": "(555) 456-7890",
+      "image": "https://images.unsplash.com/photo-1535083783855-76ae62b2914e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "hours": 8,
+      "createdBy": "user-3",
+      "createdAt": "2023-09-22T11:45:00Z"
+    },
+    {
+      "id": "opp-4",
+      "title": "Compagnon pour personnes âgées",
+      "organization": "Alliance de soins aux aînés",
+      "location": "Toute la ville",
+      "category": "Soutien aux aînés",
+      "commitment": "Hebdomadaire, 2-3 heures",
+      "description": "Offrez de la compagnie aux personnes âgées qui peuvent être isolées ou seules. Les activités comprennent la conversation, les jeux, la lecture ou les accompagner lors de promenades. Ce rôle aide à réduire l'isolement et améliore la qualité de vie des membres âgés de la communauté.",
+      "requirements": "Doit avoir 18+ ans, vérification des antécédents requise",
+      "skills": ["Empathie", "Patience", "Bon auditeur"],
+      "contactEmail": "volunteer@eldercare.org",
+      "contactPhone": "(555) 234-5678",
+      "image": "https://images.unsplash.com/photo-1516307365426-bea591f05011?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "hours": 3,
+      "createdBy": "user-1",
+      "createdAt": "2023-12-01T16:20:00Z"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-1",
+      "title": "Nettoyage de la plage",
+      "date": "2024-06-15T09:00:00Z",
+      "startTime": "09:00",
+      "endTime": "13:00",
+      "location": "Plage municipale",
+      "organizer": "Éco-Volontaires",
+      "description": "Rejoignez-nous pour une matinée de nettoyage de la plage. Nous fournirons des gants, des sacs et des outils. Venez aider à préserver notre environnement côtier et à protéger la vie marine.",
+      "contactEmail": "info@eco-volontaires.org",
+      "image": "https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "createdBy": "user-3",
+      "createdAt": "2024-01-10T08:30:00Z"
+    },
+    {
+      "id": "event-2",
+      "title": "Collecte de nourriture",
+      "date": "2024-05-20T10:00:00Z",
+      "startTime": "10:00",
+      "endTime": "16:00",
+      "location": "Centre communautaire",
+      "organizer": "Banque Alimentaire Locale",
+      "description": "Aidez-nous à collecter des denrées non périssables pour les familles dans le besoin. Nous avons besoin de bénévoles pour trier les dons, préparer des colis et aider à la distribution.",
+      "contactEmail": "contact@banquealimentaire.org",
+      "image": "https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "createdBy": "user-2",
+      "createdAt": "2024-02-05T14:45:00Z"
+    },
+    {
+      "id": "event-3",
+      "title": "Marathon caritatif",
+      "date": "2024-07-10T07:30:00Z",
+      "startTime": "07:30",
+      "endTime": "12:30",
+      "location": "Parc central",
+      "organizer": "Association Caritative",
+      "description": "Participez à notre marathon annuel pour collecter des fonds pour la recherche médicale. Vous pouvez courir, marcher ou faire du bénévolat aux stands de ravitaillement.",
+      "contactEmail": "marathon@association-caritative.org",
+      "image": "https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60",
+      "createdBy": "user-1",
+      "createdAt": "2024-03-15T11:20:00Z"
+    }
+  ],
+  "feedback": [
+    {
+      "id": "feedback-1",
+      "name": "Marie Dupont",
+      "role": "Bénévole communautaire",
+      "image": "https://randomuser.me/api/portraits/women/32.jpg",
+      "quote": "Faire du bénévolat via VolunteerHub a été l'une des expériences les plus enrichissantes de ma vie. J'ai rencontré des personnes incroyables et fait une réelle différence dans ma communauté.",
+      "project": "Distribution à la banque alimentaire",
+      "userId": "user-2",
+      "createdAt": "2023-11-20T15:30:00Z"
+    },
+    {
+      "id": "feedback-2",
+      "name": "Pierre Chen",
+      "role": "Militant écologiste",
+      "image": "https://randomuser.me/api/portraits/men/54.jpg",
+      "quote": "La plateforme m'a permis de trouver facilement des projets environnementaux qui correspondaient à mes valeurs. J'ai pu contribuer à plusieurs nettoyages de plages et événements de plantation d'arbres.",
+      "project": "Initiative de nettoyage côtier",
+      "userId": "user-3",
+      "createdAt": "2023-10-05T09:45:00Z"
+    },
+    {
+      "id": "feedback-3",
+      "name": "Amina Patel",
+      "role": "Bénévole en éducation",
+      "image": "https://randomuser.me/api/portraits/women/65.jpg",
+      "quote": "En tant qu'enseignante, je voulais étendre mon impact au-delà de la salle de classe. VolunteerHub m'a mise en contact avec des élèves qui avaient besoin de tutorat, et les résultats ont été incroyables.",
+      "project": "Tutorat après l'école",
+      "userId": "user-1",
+      "createdAt": "2024-01-15T14:20:00Z"
+    },
+    {
+      "id": "feedback-4",
+      "name": "Lucas Moreau",
+      "role": "Bénévole en santé",
+      "image": "https://randomuser.me/api/portraits/men/42.jpg",
+      "quote": "J'ai toujours voulu aider dans le domaine médical. Grâce à VolunteerHub, j'ai pu participer à des campagnes de sensibilisation à la santé et aider lors de collectes de sang. C'est très gratifiant de savoir qu'on peut sauver des vies.",
+      "project": "Campagne de don de sang",
+      "userId": "user-2",
+      "createdAt": "2023-12-10T10:15:00Z"
+    }
+  ],
+  "userActivities": [
+    {
+      "id": "activity-1",
+      "userId": "user-1",
+      "type": "event",
+      "itemId": "event-1",
+      "title": "Nettoyage de la plage",
+      "date": "2024-06-15T09:00:00Z",
+      "status": "Upcoming",
+      "registeredAt": "2024-01-15T14:30:00Z"
+    },
+    {
+      "id": "activity-2",
+      "userId": "user-2",
+      "type": "opportunity",
+      "itemId": "opp-2",
+      "title": "Partenaire de lecture",
+      "date": "2024-04-10T14:00:00Z",
+      "status": "Upcoming",
+      "registeredAt": "2024-02-20T09:15:00Z"
+    },
+    {
+      "id": "activity-3",
+      "userId": "user-3",
+      "type": "event",
+      "itemId": "event-3",
+      "title": "Marathon caritatif",
+      "date": "2024-07-10T07:30:00Z",
+      "status": "Upcoming",
+      "registeredAt": "2024-03-05T16:45:00Z"
+    },
+    {
+      "id": "activity-4",
+      "userId": "user-1",
+      "type": "opportunity",
+      "itemId": "opp-4",
+      "title": "Compagnon pour personnes âgées",
+      "date": "2023-12-15T10:00:00Z",
+      "status": "Completed",
+      "registeredAt": "2023-12-01T11:30:00Z"
+    }
+  ]
+}

@@ -1,43 +1,56 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Feedback.scss';
 
+// Composant pour afficher les témoignages de bénévoles
 const Feedback = () => {
+  const navigate = useNavigate();
+
+  // Tableau de témoignages de bénévoles
   const testimonials = [
     {
       id: 1,
       name: "Sarah Johnson",
-      role: "Community Volunteer",
+      role: "Bénévole communautaire",
       image: "https://randomuser.me/api/portraits/women/32.jpg",
-      quote: "Volunteering through VolunteerHub has been one of the most rewarding experiences of my life. I've met amazing people and made a real difference in my community.",
-      project: "Food Bank Distribution"
+      quote: "Faire du bénévolat via VolunteerHub a été l'une des expériences les plus enrichissantes de ma vie. J'ai rencontré des personnes incroyables et fait une réelle différence dans ma communauté.",
+      project: "Distribution à la banque alimentaire"
     },
     {
       id: 2,
       name: "Michael Chen",
-      role: "Environmental Activist",
+      role: "Militant écologiste",
       image: "https://randomuser.me/api/portraits/men/54.jpg",
-      quote: "The platform made it incredibly easy to find environmental projects that aligned with my values. I've been able to contribute to multiple beach cleanups and tree planting events.",
-      project: "Coastal Cleanup Initiative"
+      quote: "La plateforme m'a permis de trouver facilement des projets environnementaux qui correspondaient à mes valeurs. J'ai pu contribuer à plusieurs nettoyages de plages et événements de plantation d'arbres.",
+      project: "Initiative de nettoyage côtier"
     },
     {
       id: 3,
       name: "Aisha Patel",
-      role: "Education Volunteer",
+      role: "Bénévole en éducation",
       image: "https://randomuser.me/api/portraits/women/65.jpg",
-      quote: "As a teacher, I wanted to extend my impact beyond the classroom. VolunteerHub connected me with students who needed tutoring, and the results have been incredible.",
-      project: "After-School Tutoring"
+      quote: "En tant qu'enseignante, je voulais étendre mon impact au-delà de la salle de classe. VolunteerHub m'a mise en contact avec des élèves qui avaient besoin de tutorat, et les résultats ont été incroyables.",
+      project: "Tutorat après l'école"
     }
   ];
+
+  // Gérer le clic sur le bouton de partage d'expérience
+  const handleShareStory = () => {
+    navigate('/events');
+  };
 
   return (
     <section className="feedback-section">
       <div className="feedback-container">
-        <h2 className="feedback-title">Volunteer <span className="highlight">Stories</span></h2>
-        <p className="feedback-subtitle">Hear from people making a difference in their communities</p>
+        {/* Titre et sous-titre de la section */}
+        <h2 className="feedback-title">Histoires de <span className="highlight">bénévoles</span></h2>
+        <p className="feedback-subtitle">Écoutez les témoignages de personnes qui font une différence dans leurs communautés</p>
         
+        {/* Grille de témoignages */}
         <div className="testimonials-grid">
           {testimonials.map(testimonial => (
             <div className="testimonial-card" key={testimonial.id}>
+              {/* En-tête du témoignage avec photo et informations du bénévole */}
               <div className="testimonial-header">
                 <div className="volunteer-image">
                   <img src={testimonial.image} alt={testimonial.name} />
@@ -48,6 +61,7 @@ const Feedback = () => {
                   <div className="project-badge">{testimonial.project}</div>
                 </div>
               </div>
+              {/* Citation du témoignage */}
               <blockquote className="testimonial-quote">
                 "{testimonial.quote}"
               </blockquote>
@@ -55,9 +69,12 @@ const Feedback = () => {
           ))}
         </div>
         
+        {/* Appel à l'action pour partager sa propre histoire */}
         <div className="feedback-cta">
-          <h3>Ready to share your own volunteer story?</h3>
-          <button className="share-story-btn">Share Your Experience</button>
+          <h3>Prêt à partager votre propre histoire de bénévolat?</h3>
+          <button className="share-story-btn" onClick={handleShareStory}>
+            Partagez votre expérience
+          </button>
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../api/authApi';
+import { opportunityApi } from '../../api/opportunityApi';
 import './Forms.scss';
 
 const OpportunityForm = () => {
@@ -16,24 +16,24 @@ const OpportunityForm = () => {
     skills: '',
     contactEmail: '',
     contactPhone: '',
-    image: null,
-    hours: 3 // Default hours
+    image: '',
+    hours: 3 // Valeur par défaut
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const categories = [
-    'Environment',
-    'Education',
-    'Social Services',
-    'Healthcare',
-    'Animal Welfare',
-    'Community Development',
-    'Arts & Culture',
-    'Crisis Response',
-    'Youth Services',
-    'Senior Support'
+    'Environnement',
+    'Éducation',
+    'Services sociaux',
+    'Santé',
+    'Protection des animaux',
+    'Développement communautaire',
+    'Arts et culture',
+    'Réponse aux crises',
+    'Services à la jeunesse',
+    'Soutien aux aînés'
   ];
 
   const handleChange = (e) => {
@@ -45,10 +45,14 @@ const OpportunityForm = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      image: e.target.files[0]
-    });
+    if (e.target.files && e.target.files[0]) {
+      // Pour l'instant, on stocke juste l'URL de l'image
+      const imageUrl = URL.createObjectURL(e.target.files[0]);
+      setFormData({
+        ...formData,
+        image: imageUrl
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -57,22 +61,64 @@ const OpportunityForm = () => {
     setLoading(true);
 
     try {
-      // Process skills
+      // Validation des données du formulaire
+      if (!formData.title.trim()) {
+        throw new Error('Le titre de l\'opportunité est requis');
+      }
+      
+      if (!formData.organization.trim()) {
+        throw new Error('Le nom de l\'organisation est requis');
+      }
+      
+      if (!formData.location.trim()) {
+        throw new Error('Le lieu est requis');
+      }
+      
+      if (!formData.category) {
+        throw new Error('La catégorie est requise');
+      }
+      
+      if (!formData.commitment.trim()) {
+        throw new Error('L\'engagement de temps est requis');
+      }
+      
+      if (!formData.description.trim()) {
+        throw new Error('La description est requise');
+      }
+      
+      if (!formData.contactEmail.trim()) {
+        throw new Error('L\'email de contact est requis');
+      }
+      
+      // Traiter les compétences
       const processedData = {
         ...formData,
-        skills: formData.skills.split(',').map(skill => skill.trim())
+        skills: formData.skills ? formData.skills.split(',').map(skill => skill.trim()) : []
       };
       
-      // Add the opportunity using authApi
-      const opportunity = authApi.addOpportunity(processedData);
+      console.log('Données à envoyer:', processedData);
       
+      // Créer l'opportunité en utilisant l'API dédiée
+      const response = await opportunityApi.createOpportunity(processedData);
+      
+      console.log('Opportunité créée avec succès:', response);
       setSuccess(true);
+      
+      // Rediriger vers la page des opportunités après 2 secondes
       setTimeout(() => {
-        navigate('/profile');
+        navigate('/opportunities');
       }, 2000);
     } catch (err) {
-      setError('Failed to create opportunity. Please try again.');
-      console.error('Form submission error:', err);
+      console.error('Erreur lors de la création de l\'opportunité:', err);
+      
+      // Afficher un message d'erreur détaillé
+      if (err.response?.data?.message) {
+        setError(`Erreur: ${err.response.data.message}`);
+      } else if (err.message) {
+        setError(`Erreur: ${err.message}`);
+      } else {
+        setError('Erreur lors de la création de l\'opportunité. Veuillez vérifier tous les champs et réessayer.');
+      }
     } finally {
       setLoading(false);
     }
@@ -82,16 +128,16 @@ const OpportunityForm = () => {
     <div className="form-container">
       <div className="form-card">
         <div className="form-header">
-          <h2>Create Volunteer Opportunity</h2>
-          <p>Share a new opportunity with our volunteer community</p>
+          <h2>Créer une opportunité de bénévolat</h2>
+          <p>Partagez une nouvelle opportunité avec notre communauté de bénévoles</p>
         </div>
 
         {error && <div className="form-error">{error}</div>}
-        {success && <div className="form-success">Opportunity created successfully! Redirecting to your profile...</div>}
+        {success && <div className="form-success">Opportunité créée avec succès! Redirection vers la page des opportunités...</div>}
 
         <form className="custom-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="title">Opportunity Title*</label>
+            <label htmlFor="title">Titre de l'opportunité*</label>
             <input
               type="text"
               id="title"
@@ -99,13 +145,13 @@ const OpportunityForm = () => {
               value={formData.title}
               onChange={handleChange}
               required
-              placeholder="Enter the opportunity title"
+              placeholder="Entrez le titre de l'opportunité"
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="organization">Organization*</label>
+              <label htmlFor="organization">Organisation*</label>
               <input
                 type="text"
                 id="organization"
@@ -113,12 +159,12 @@ const OpportunityForm = () => {
                 value={formData.organization}
                 onChange={handleChange}
                 required
-                placeholder="Enter organization name"
+                placeholder="Entrez le nom de l'organisation"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="location">Location*</label>
+              <label htmlFor="location">Lieu*</label>
               <input
                 type="text"
                 id="location"
@@ -126,14 +172,14 @@ const OpportunityForm = () => {
                 value={formData.location}
                 onChange={handleChange}
                 required
-                placeholder="Enter location"
+                placeholder="Entrez le lieu"
               />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="category">Category*</label>
+              <label htmlFor="category">Catégorie*</label>
               <select
                 id="category"
                 name="category"
@@ -141,7 +187,7 @@ const OpportunityForm = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="">Select a category</option>
+                <option value="">Sélectionnez une catégorie</option>
                 {categories.map((category, index) => (
                   <option key={index} value={category}>{category}</option>
                 ))}
@@ -149,7 +195,7 @@ const OpportunityForm = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="commitment">Time Commitment*</label>
+              <label htmlFor="commitment">Engagement de temps*</label>
               <input
                 type="text"
                 id="commitment"
@@ -157,7 +203,7 @@ const OpportunityForm = () => {
                 value={formData.commitment}
                 onChange={handleChange}
                 required
-                placeholder="e.g., Weekly, 3-4 hours"
+                placeholder="ex: Hebdomadaire, 3-4 heures"
               />
             </div>
           </div>
@@ -170,37 +216,37 @@ const OpportunityForm = () => {
               value={formData.description}
               onChange={handleChange}
               required
-              placeholder="Describe the volunteer opportunity"
+              placeholder="Décrivez l'opportunité de bénévolat"
               rows="4"
             ></textarea>
           </div>
 
           <div className="form-group">
-            <label htmlFor="requirements">Requirements</label>
+            <label htmlFor="requirements">Prérequis</label>
             <textarea
               id="requirements"
               name="requirements"
               value={formData.requirements}
               onChange={handleChange}
-              placeholder="Any specific requirements for volunteers"
+              placeholder="Exigences spécifiques pour les bénévoles"
               rows="2"
             ></textarea>
           </div>
 
           <div className="form-group">
-            <label htmlFor="skills">Skills Needed (comma-separated)</label>
+            <label htmlFor="skills">Compétences requises (séparées par des virgules)</label>
             <input
               type="text"
               id="skills"
               name="skills"
               value={formData.skills}
               onChange={handleChange}
-              placeholder="e.g., Communication, Teamwork, First Aid"
+              placeholder="ex: Communication, Travail d'équipe, Premiers secours"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="hours">Volunteer Hours per Session*</label>
+            <label htmlFor="hours">Heures de bénévolat par session*</label>
             <input
               type="number"
               id="hours"
@@ -210,13 +256,13 @@ const OpportunityForm = () => {
               required
               min="1"
               max="24"
-              placeholder="Enter volunteer hours per session"
+              placeholder="Entrez le nombre d'heures par session"
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="contactEmail">Contact Email*</label>
+              <label htmlFor="contactEmail">Email de contact*</label>
               <input
                 type="email"
                 id="contactEmail"
@@ -224,25 +270,25 @@ const OpportunityForm = () => {
                 value={formData.contactEmail}
                 onChange={handleChange}
                 required
-                placeholder="Enter contact email"
+                placeholder="Entrez l'email de contact"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="contactPhone">Contact Phone</label>
+              <label htmlFor="contactPhone">Téléphone de contact</label>
               <input
                 type="tel"
                 id="contactPhone"
                 name="contactPhone"
                 value={formData.contactPhone}
                 onChange={handleChange}
-                placeholder="Enter contact phone"
+                placeholder="Entrez le téléphone de contact"
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="image">Opportunity Image</label>
+            <label htmlFor="image">Image de l'opportunité</label>
             <input
               type="file"
               id="image"
@@ -250,7 +296,7 @@ const OpportunityForm = () => {
               onChange={handleFileChange}
               accept="image/*"
             />
-            <small>Recommended size: 800x500 pixels</small>
+            <small>Taille recommandée: 800x500 pixels</small>
           </div>
 
           <button 
@@ -258,7 +304,7 @@ const OpportunityForm = () => {
             className="form-button"
             disabled={loading}
           >
-            {loading ? 'Creating Opportunity...' : 'Create Opportunity'}
+            {loading ? 'Création en cours...' : 'Créer l\'opportunité'}
           </button>
         </form>
       </div>
